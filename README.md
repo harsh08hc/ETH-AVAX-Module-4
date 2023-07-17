@@ -103,7 +103,6 @@ The `getNFTStats` function returns the value, limit, and claimed count of a spec
 
 This contract is released under the [MIT License](https://opensource.org/licenses/MIT).
 
-Feel free to modify and use this contract according to your needs.  
 
 ### Video Walkthrough
 
