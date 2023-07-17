@@ -4,57 +4,74 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "hardhat/console.sol";
 
 contract DegenToken is ERC20, Ownable, ERC20Burnable {
 
-    constructor() ERC20("Degen", "DGN") {}
+    mapping(address => uint256) private _claimedNFTs;
+
+    enum NFTType {ProPlayer, SuperNinja, DegenCap}
+
+    struct NFT {
+        uint256 value;
+        uint256 limit;
+        uint256 claimedCount;
+    }
+
+    mapping(uint256 => NFT) private _nfts;
+
+    event NFTClaimed(address indexed recipient, NFTType nftType, uint256 amount);
+
+    constructor() ERC20("Degen", "DGN") {
+        _nfts[uint256(NFTType.ProPlayer)] = NFT(200, 1, 0);
+        _nfts[uint256(NFTType.SuperNinja)] = NFT(100, 5, 0);
+        _nfts[uint256(NFTType.DegenCap)] = NFT(75, 10, 0);
+    }
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
 
-    function transferTokens(address _reciever, uint amount) external {
-        require(balanceOf(msg.sender) >= amount, "you are not owner");
-        approve(msg.sender, amount);
-        transferFrom(msg.sender, _reciever, amount);
+    function transferTokens(address recipient, uint256 amount) external {
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+        _transfer(_msgSender(), recipient, amount);
     }
 
-    function checkBalance() external view returns(uint) {
+    function checkBalance() external view returns(uint256) {
         return balanceOf(msg.sender);
     }
 
-    function burnTokens(uint amount) external {
-        require(balanceOf(msg.sender) >= amount, "You do not have enough Tokens");
+    function burnTokens(uint256 amount) external {
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
         _burn(msg.sender, amount);
     }
 
-    function gameStore() public pure returns(string memory) {
-        return "1. ProPlayer NFT value = 200\n2. SuperNinja value = 100\n3. DegenCap value = 75";
+    function claimNFT(NFTType nftType) external {
+        uint256 tokenId = uint256(nftType);
+        require(tokenId >= 0 && tokenId < 3, "Invalid selection.");
+
+        NFT storage nft = _nfts[tokenId];
+        require(nft.claimedCount < nft.limit, "NFT limit reached.");
+
+        uint256 requiredAmount = nft.value;
+        require(balanceOf(msg.sender) >= requiredAmount, "Insufficient balance.");
+
+        _transfer(msg.sender, owner(), requiredAmount);
+        _claimedNFTs[msg.sender] = tokenId;
+
+        nft.claimedCount++;
+        emit NFTClaimed(msg.sender, nftType, requiredAmount);
     }
 
-    function redeemTokens(uint choice) external payable {
-        require(choice <= 3, "Invalid selection.");
+    function getNFTClaimed(address recipient) external view returns (NFTType) {
+        uint256 tokenId = _claimedNFTs[recipient];
+        require(tokenId >= 0 && tokenId < 3, "No NFT claimed.");
+        return NFTType(tokenId);
+    }
 
-        // Redeem a ProPlayer NFT.
-        if (choice == 1) {
-            require(balanceOf(msg.sender) >= 200, "Insufficient balance.");
-            approve(msg.sender, 200);
-            transferFrom(msg.sender, owner(), 200);
-        }
-
-        // Redeem a SuperNinja NFT.
-        else if (choice == 2) {
-            require(balanceOf(msg.sender) >= 100, "Insufficient balance.");
-            approve(msg.sender, 100);
-            transferFrom(msg.sender, owner(), 100);
-        }
-
-        // Redeem a DegenCap NFT.
-        else {
-            require(balanceOf(msg.sender) >= 75, "Insufficient balance.");
-            approve(msg.sender, 75);
-            transferFrom(msg.sender, owner(), 75);
-        }
+    function getNFTStats(NFTType nftType) external view returns (uint256, uint256, uint256) {
+        uint256 tokenId = uint256(nftType);
+        require(tokenId >= 0 && tokenId < 3, "Invalid selection.");
+        NFT storage nft = _nfts[tokenId];
+        return (nft.value, nft.limit, nft.claimedCount);
     }
 }
