@@ -1,75 +1,113 @@
-# DegenToken Contract
+Certainly! Here's an example README file for the `DegenToken` contract you provided:
 
-The DegenToken contract is an ERC20 token smart contract that enables various functionalities for players in the Degen Gaming platform. The contract is designed to provide the following features:
+# DegenToken
 
-- Minting new tokens: The platform owner can create new tokens and distribute them as rewards to players. Only the contract owner has the authority to mint tokens.
+DegenToken is an ERC20 token contract that allows users to mint, transfer, burn tokens, and redeem tokens for non-fungible tokens (NFTs). The contract includes functionality for managing NFT types, limits, and claiming.
 
-- Transferring tokens: Players can transfer their tokens to others. They can initiate token transfers to any address by specifying the recipient and the amount of tokens they wish to transfer.
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Deployment](#deployment)
+- [Usage](#usage)
+  - [Minting Tokens](#minting-tokens)
+  - [Transferring Tokens](#transferring-tokens)
+  - [Burning Tokens](#burning-tokens)
+  - [Redeeming Tokens](#redeeming-tokens)
+  - [Checking Token Balance](#checking-token-balance)
+  - [NFT Statistics](#nft-statistics)
 
-- Redeeming tokens: Players can redeem their tokens for items in the in-game store. The contract provides a list of available items that can be redeemed using the corresponding token values.
+## Prerequisites
 
-- Checking token balance: Players can check their token balance at any time by calling the `checkBalance` function. It returns the balance of tokens held by the caller's address.
+- Solidity ^0.8.18
+- OpenZeppelin Contracts v4.4.0
 
-- Burning tokens: Any token holder can burn their own tokens if they are no longer needed. The `burnTokens` function allows token holders to burn a specific amount of tokens from their own balance.
+## Deployment
 
-## Contract Details
+1. Install the necessary dependencies using the following command:
+   ```bash
+   npm install @openzeppelin/contracts
+   ```
 
-- SPDX-License-Identifier: MIT
-- Solidity Version: ^0.8.18
+2. Compile the Solidity contract `DegenToken.sol` using a Solidity compiler.
 
-## Functions
+3. Deploy the contract to the desired network (e.g., Avalanche) using a suitable deployment tool like Hardhat, Truffle, or Remix IDE.
 
-### mint
+## Usage
+
+### Minting Tokens
+
+The `mint` function allows the contract owner to create and distribute new tokens.
 
 ```solidity
 function mint(address to, uint256 amount) public onlyOwner
 ```
 
-The `mint` function allows the contract owner to create new tokens and distribute them to specified addresses. It takes two parameters: `to` (the recipient's address) and `amount` (the number of tokens to mint). Only the contract owner can call this function.
+To mint new tokens, provide the recipient's address (`to`) and the desired token amount (`amount`) as function arguments.
 
-### transferTokens
+### Transferring Tokens
 
-```solidity
-function transferTokens(address _receiver, uint amount) external
-```
-
-The `transferTokens` function enables players to transfer their tokens to others. Players can initiate transfers by providing the recipient's address (`_receiver`) and the amount of tokens (`amount`) to transfer. This function requires that the caller has a sufficient balance of tokens.
-
-### checkBalance
+Users can transfer their tokens to other addresses using the `transferTokens` function.
 
 ```solidity
-function checkBalance() external view returns (uint)
+function transferTokens(address recipient, uint256 amount) external
 ```
 
-The `checkBalance` function allows players to check their token balance at any time. It returns the balance of tokens held by the caller's address.
+To transfer tokens, call the `transferTokens` function and provide the recipient's address (`recipient`) and the token amount (`amount`) to be transferred.
 
-### burnTokens
+### Burning Tokens
+
+Any token holder can burn their tokens using the `burnTokens` function.
 
 ```solidity
-function burnTokens(uint amount) external
+function burnTokens(uint256 amount) external
 ```
 
-The `burnTokens` function enables any token holder to burn their own tokens if they are no longer needed. Token holders can specify the amount of tokens (`amount`) they wish to burn. The function requires that the caller has a sufficient balance of tokens.
+To burn tokens, call the `burnTokens` function and specify the token amount (`amount`) to be burned.
 
-### gameStore
+### Redeeming Tokens
+
+Users can redeem their tokens for non-fungible tokens (NFTs) using the `claimNFT` function.
 
 ```solidity
-function gameStore() public pure returns (string memory)
+function claimNFT(NFTType nftType) external
 ```
 
-The `gameStore` function provides information about the available items in the in-game store. It returns a string with the options and their corresponding values. Players can choose from these items to redeem with their tokens.
+To redeem an NFT, call the `claimNFT` function and provide the desired `nftType`. The available NFT types are defined in the `NFTType` enumeration.
 
-### redeemTokens
+### Checking Token Balance
+
+The `checkBalance` function allows users to check their token balance.
 
 ```solidity
-function redeemTokens(uint choice) external payable
+function checkBalance() external view returns(uint256)
 ```
 
-The `redeemTokens` function allows players to redeem tokens for items in the in-game store. Players need to provide the `choice` parameter, representing the sequence number of the desired item to redeem. The function checks the player's token balance and verifies if it is sufficient for the selected item. If the conditions are met, it transfers the corresponding token value to the contract owner.
+Calling the `checkBalance` function will return the token balance of the caller.
+
+### NFT Statistics
+
+The contract provides functions to retrieve statistics about the NFTs.
+
+```solidity
+function getNFTClaimed(address recipient) external view returns (NFTType)
+```
+
+The `getNFTClaimed` function returns the type of NFT claimed by a given `recipient` address.
+
+```solidity
+function getNFTStats(NFTType nftType) external view returns (uint256, uint256, uint256)
+```
+
+The `getNFTStats` function returns the value, limit, and claimed count of a specific `nftType` NFT.
+
+## License
+
+This contract is released under the [MIT License](https://opensource.org/licenses/MIT).
+
+Feel free to modify and use this contract according to your needs.  
 
 ### Video Walkthrough
 
-https://www.loom.com/share/2f91d363db5247ef88a2dc623ab45c0c?sid=88722b8f-692d-4b2f-8071-473a996d2e9e
+
 
 ## Author
   
