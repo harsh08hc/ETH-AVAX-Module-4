@@ -1,5 +1,3 @@
-Certainly! Here's an example README file for the `DegenToken` contract you provided:
-
 # DegenToken
 
 DegenToken is an ERC20 token contract that allows users to mint, transfer, burn tokens, and redeem tokens for non-fungible tokens (NFTs). The contract includes functionality for managing NFT types, limits, and claiming.
@@ -105,8 +103,7 @@ This contract is released under the [MIT License](https://opensource.org/license
 
 
 ### Video Walkthrough
-
-
+https://www.loom.com/share/52b8e285163f465aa36d91d58ebd6d43?sid=ee795f7a-9cb7-4396-b0d9-2248df621554
 
 ## Author
   
